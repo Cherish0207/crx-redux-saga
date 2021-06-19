@@ -1,6 +1,7 @@
-import { put, take } from "redux-saga/effects";
+import { put, take } from "../redux-saga/effects";
 import * as types from "./action-types";
 
+// rootage如何执行的,如何启动,如何运行的,在运行中是如何处理和响应接收到的指令的?
 export default function* rootSaga() {
   console.log("run rootSaga");
   for (let i = 0; i < 3; i++) {
