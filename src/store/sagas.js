@@ -1,4 +1,4 @@
-import { put, takeEvery } from "../redux-saga/effects";
+import { put, takeEvery, call } from "../redux-saga/effects";
 import * as types from "./action-types";
 
 const delay = (ms) =>
@@ -9,7 +9,7 @@ const delay = (ms) =>
   });
 
 function* worker_add() {
-  yield delay(1000);
+  yield call(delay, 1000); // 告诉saga中间件,请帮我调用 delay方法,参数是1000 方便单元测试
   yield put({ type: types.ADD });
 }
 function* watcher_add() {

@@ -24,6 +24,9 @@ export default function runSaga(env, saga) {
             runSaga(env, effect.saga); // 开局一个新的子进程去运行saga
             next(); //不会阻塞当前的saga继续执行
             break;
+          case effectTypes.CALL:
+            effect.fn(...effect.args).then(next);
+            break; // 会阻塞当前的saga继续执行
           default:
             break;
         }

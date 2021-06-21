@@ -21,3 +21,6 @@ export function takeEvery(actionType, saga) {
   }
   return fork(takeEveryHelper);
 }
+export function call(fn, ...args) {
+  return { type: effectTypes.CALL, fn, args };
+}
