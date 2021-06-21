@@ -1,4 +1,5 @@
 import * as effectTypes from "./effectTypes";
+import { TASK_CANCEL } from "./symbols";
 /**
  *
  * @param {*} env
@@ -6,7 +7,7 @@ import * as effectTypes from "./effectTypes";
  * @param {*} callback 完成后的回调
  */
 export default function runSaga(env, saga, callback) {
-  console.log("runSaga");
+  let task = { cancel: () => next(TASK_CANCEL) };
   let { channel, dispatch } = env;
   let it = typeof saga === "function" ? saga() : saga;
   function next(value, isError) {
@@ -23,6 +24,9 @@ export default function runSaga(env, saga, callback) {
         next();
       } else if (typeof effect.then === "function") {
         effect.then(next);
+      } else if (value === TASK_CANCEL) {
+        // 如果给next传入了TASK CANCEL,直接把任务取消掉
+        result = it.return(value);
       } else {
         switch (effect.type) {
           case effectTypes.TAKE:
@@ -33,8 +37,8 @@ export default function runSaga(env, saga, callback) {
             next();
             break;
           case effectTypes.FORK:
-            runSaga(env, effect.saga); // 开局一个新的子进程去运行saga
-            next(); //不会阻塞当前的saga继续执行
+            let forkTask = runSaga(env, effect.saga); // 开启一个新的子进程去运行saga
+            next(forkTask); //不会阻塞当前的saga继续执行
             break;
           case effectTypes.CALL:
             effect.fn(...effect.args).then(next);
@@ -61,6 +65,10 @@ export default function runSaga(env, saga, callback) {
               })
             );
             break;
+          case effectTypes.CANCEL:
+            effect.task.cancel();
+            next();
+            break;
           default:
             break;
         }
@@ -71,4 +79,5 @@ export default function runSaga(env, saga, callback) {
     }
   }
   next();
+  return task;
 }

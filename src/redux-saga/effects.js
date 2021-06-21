@@ -30,3 +30,13 @@ export function cps(fn, ...args) {
 export function all(effects) {
   return { type: effectTypes.ALL, effects };
 }
+export function cancel(task) {
+  return { type: effectTypes.CANCEL, task };
+}
+export default function delayP(ms, val = true) {
+  const promise = new Promise((resolve) => {
+    setTimeout(resolve, ms, val);
+  });
+  return promise;
+}
+export const delay = call.bind(null, delayP);

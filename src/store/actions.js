@@ -6,5 +6,8 @@ const actions = {
   asyncAdd() {
     return { type: types.ASYNC_ADD };
   },
+  stop() {
+    return { type: types.STOP_ADD };
+  },
 };
 export default actions;
