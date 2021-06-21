@@ -7,3 +7,18 @@ export function take(actionType) {
 export function put(action) {
   return { type: effectTypes.PUT, action };
 }
+
+export function fork(fn) {
+  return { type: effectTypes.FORK, saga: fn };
+}
+
+export function takeEvery(actionType, saga) {
+  function* takeEveryHelper() {
+    while (true) {
+      yield take(actionType);
+      yield fork(saga); // fork 异步非阻塞调用，无阻塞的执行fn，执行fn时，不会暂停Generator
+    }
+  }
+
+  return fork(takeEveryHelper);
+}

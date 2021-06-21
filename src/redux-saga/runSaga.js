@@ -18,6 +18,10 @@ export default function runSaga(env, saga) {
             dispatch(effect.action);
             next();
             break;
+          case effectTypes.FORK:
+            runSaga(env, effect.saga); // 开局一个新的子进程去运行saga
+            next(); //不会阻塞当前的saga继续执行
+            break;
           default:
             break;
         }
