@@ -9,6 +9,8 @@ export default function runSaga(env, saga) {
       if (typeof effect[Symbol.iterator] === "function") {
         runSaga(env, effect);
         next();
+      } else if (typeof effect.then === "function") {
+        effect.then(next);
       } else {
         switch (effect.type) {
           case effectTypes.TAKE:

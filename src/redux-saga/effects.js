@@ -19,6 +19,5 @@ export function takeEvery(actionType, saga) {
       yield fork(saga); // fork 异步非阻塞调用，无阻塞的执行fn，执行fn时，不会暂停Generator
     }
   }
-
   return fork(takeEveryHelper);
 }
