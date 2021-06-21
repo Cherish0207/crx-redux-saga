@@ -1,5 +1,11 @@
 import * as effectTypes from "./effectTypes";
-export default function runSaga(env, saga) {
+/**
+ *
+ * @param {*} env
+ * @param {*} saga
+ * @param {*} callback 完成后的回调
+ */
+export default function runSaga(env, saga, callback) {
   console.log("runSaga");
   let { channel, dispatch } = env;
   let it = typeof saga === "function" ? saga() : saga;
@@ -43,10 +49,25 @@ export default function runSaga(env, saga) {
               }
             });
             break;
+          case effectTypes.ALL:
+            let effects = effect.effects;
+            let result = [];
+            let complete = 0;
+            effects.forEach((effect, index) =>
+              runSaga(env, effect, (res) => {
+                result[index] = res;
+                // 判断完成的数量和总的数量是否相等,如果相等,相当于任务全部结東,就可以让当前的saga继续next执行了
+                if (++complete === effects.length) next(result);
+              })
+            );
+            break;
           default:
             break;
         }
       }
+    } else {
+      // 如果done已经为true了,说明整个saga就结束了
+      callback && callback(effect);
     }
   }
   next();
