@@ -24,3 +24,6 @@ export function takeEvery(actionType, saga) {
 export function call(fn, ...args) {
   return { type: effectTypes.CALL, fn, args };
 }
+export function cps(fn, ...args) {
+  return { type: effectTypes.CPS, fn, args };
+}
